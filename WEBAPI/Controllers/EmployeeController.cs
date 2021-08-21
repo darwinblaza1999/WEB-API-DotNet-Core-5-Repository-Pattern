@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WEBAPI.Class;
 using WEBAPI.IRepository.IAdapterRepository;
 using WEBAPI.Models;
 
@@ -10,9 +11,9 @@ namespace WEBAPI.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    public class EmployeeController : ControllerBase
+    public class EmployeeController : BaseController
     {
-        private readonly IAdapter _adapter;
+        private readonly IAdapter _adapter; 
         public EmployeeController(IAdapter adapter)
         {
             _adapter = adapter;
@@ -45,6 +46,14 @@ namespace WEBAPI.Controllers
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var adapter = await _adapter.employee.DeleteEmployee(id);
+            return Ok(adapter);
+        }
+
+        [HttpGet]
+        [Route("GetAll")]
+        public async Task<IActionResult> GetAllData()
+        {
+            var adapter = await _adapter.employee.GetAllData();
             return Ok(adapter);
         }
     }

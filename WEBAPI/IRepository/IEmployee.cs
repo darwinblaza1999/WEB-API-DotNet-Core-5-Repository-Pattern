@@ -13,6 +13,9 @@ namespace WEBAPI.IRepository
         Task<ServiceResponse<object>> insert(EmployeeModel model);
 
         Task<ServiceResponse<object>> updatebyID(EmployeeModel model, int id);
+
         Task<ServiceResponse<object>> DeleteEmployee(int id);
+
+        Task<ServiceResponse<object>> GetAllData();
     }
 }

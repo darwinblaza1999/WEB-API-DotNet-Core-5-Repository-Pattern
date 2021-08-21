@@ -65,7 +65,6 @@ namespace WEBAPI.Class
             {
                 var param = new DynamicParameters();
                 param.Add("id", id);
-                var conect = conn.ConnectionString;
                 var res = conn.Query("usp_getData", param, commandType: System.Data.CommandType.StoredProcedure).FirstOrDefault();
                 var resCode = res.code;
                 if(resCode == 10)
@@ -120,6 +119,13 @@ namespace WEBAPI.Class
                 service.ResponseCode = Int32.Parse(retval);
                 service.Message = "Success";
             }
+            catch (SqlException sql)
+            {
+
+                service.Data = sql.Message;
+                service.ResponseCode = 400;
+                service.Message = "SqlException Error";
+            }
             catch (Exception ex)
             {
 
@@ -169,6 +175,37 @@ namespace WEBAPI.Class
                 service.Data = ex.Message;
                 service.ResponseCode = 400;
                 service.Message = "Exception Error";
+            }
+            return service;
+        }
+
+        public async Task<ServiceResponse<object>> GetAllData()
+        {
+            var service = new ServiceResponse<object>();
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("retval", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
+                var result = conn.Query("usp_GetAllData", param, commandType: System.Data.CommandType.StoredProcedure).ToList();
+                var retval = param.Get<int>("retval").ToString();
+
+                service.Data = result;
+                service.ResponseCode = Int32.Parse(retval);
+                service.Message = "Success";
+            }
+            catch (SqlException sql)
+            {
+
+                service.Data = sql.Message;
+                service.ResponseCode = 400;
+                service.Message = "SqlException";
+            }
+            catch (Exception ex)
+            {
+
+                service.Data = ex.Message;
+                service.ResponseCode = 400;
+                service.Message = "Exception";
             }
             return service;
         }

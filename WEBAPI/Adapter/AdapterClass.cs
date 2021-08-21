@@ -12,10 +12,14 @@ namespace WEBAPI.Adapter
     public class AdapterClass : IAdapter
     {
         public IEmployee employee { get; }
+        public IAuthenticate authenticate { get; }
 
         public AdapterClass(IConfiguration config)
         {
             employee = new EmployeeClass(config);
+
+            authenticate = new AuthenticationClass(config);
         }
+        
     }
 }

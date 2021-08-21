@@ -8,5 +8,6 @@ namespace WEBAPI.IRepository.IAdapterRepository
     public interface IAdapter
     {
         IEmployee employee { get; }
+        IAuthenticate authenticate { get; }
     }
 }
