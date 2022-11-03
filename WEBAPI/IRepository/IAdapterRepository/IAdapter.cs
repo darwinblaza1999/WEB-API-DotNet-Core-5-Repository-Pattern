@@ -9,5 +9,6 @@ namespace WEBAPI.IRepository.IAdapterRepository
     {
         IEmployee employee { get; }
         IAuthenticate authenticate { get; }
+        IUser user { get; }
     }
 }

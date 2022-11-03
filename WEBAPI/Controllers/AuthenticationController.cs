@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WEBAPI.Adapter;
 using WEBAPI.IRepository.IAdapterRepository;
 using WEBAPI.Models;
 
@@ -28,6 +29,13 @@ namespace WEBAPI.Controllers
             return Ok(adapter);
 
         }
-
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(TokenModel token)
+        {
+            var result = await _adapter.authenticate.RefreshToken(token);
+            return Ok(result);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,15 @@ namespace WEBAPI.Adapter
     {
         public IEmployee employee { get; }
         public IAuthenticate authenticate { get; }
+        public IUser user { get; }
 
-        public AdapterClass(IConfiguration config)
+        public AdapterClass(IConfiguration config, IWebHostEnvironment webHosting)
         {
             employee = new EmployeeClass(config);
 
             authenticate = new AuthenticationClass(config);
+
+            user = new UserClass(config, webHosting);
         }
         
     }

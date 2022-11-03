@@ -113,10 +113,10 @@ namespace WEBAPI.Class
                 param.Add("Id", id);
                 param.Add("retval", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
                 var res = conn.Query("usp_update", param, commandType: System.Data.CommandType.StoredProcedure).FirstOrDefault();
-                var retval = param.Get<int>("retval").ToString();
+                var retval = param.Get<int>("retval");
 
                 service.Data = res;
-                service.ResponseCode = Int32.Parse(retval);
+                service.ResponseCode = retval;
                 service.Message = "Success";
             }
             catch (SqlException sql)

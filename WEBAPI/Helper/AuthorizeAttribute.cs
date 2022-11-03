@@ -16,15 +16,14 @@ namespace WEBAPI.Helper
         {
             var user = (AutorizeModel)context.HttpContext.Items["Users"];
             var tokenexpiry = (bool)context.HttpContext.Items["token_expiry"];
-            if(tokenexpiry)
+            if (tokenexpiry)
             {
                 context.Result = new JsonResult(new { Message = "Token Expired" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }
             else if (user == null)
             {
-                context.Result = new JsonResult(new { Message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized};
+                context.Result = new JsonResult(new { Message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }
-            
         }
     }
 }

@@ -37,18 +37,17 @@ namespace WEBAPI.Class
                 var param = new DynamicParameters();
     
                 param.Add("username", username);
-                param.Add("_password", password);
+                param.Add("password", password);
                 param.Add("retval", dbType: DbType.Int32, direction:ParameterDirection.Output);
-                var result = await con.QueryAsync<dynamic>("getUser", param, commandType: CommandType.StoredProcedure);
+                var result = await con.QueryAsync<dynamic>("usp_Login", param, commandType: CommandType.StoredProcedure);
                 var retval = param.Get<int>("retval");
 
-                if (retval.Equals(20))
+                if (retval.Equals(100))
                 {
                     var model = new UserModel();
-                    model.firstname = result.First().firstname;
-                    model.middlename = result.First().middlename;
-                    model.lastname = result.First().lastname;
-                    model.username = result.First().username;
+                    model.firstname = result.First().Firstname;
+                    model.lastname = result.First().Lastname;
+                    model.email = result.First().Email;
                     service.Data = new { Token =  JToken(model) };
                     service.ResponseCode = 200;
                     service.Message = "Success";
@@ -56,14 +55,14 @@ namespace WEBAPI.Class
                 else
                 {
                     service.ResponseCode = 400;
-                    service.Message = "Invalid username or password";
+                    service.Message = "Unauthorized access user";
                 }
 
             }
             catch (Exception ex)
             {
                 service.Data = ex.Message;
-                service.ResponseCode = 400;
+                service.ResponseCode = 500;
                 service.Message = "Exception Error";
             }
             return service;
@@ -81,7 +80,6 @@ namespace WEBAPI.Class
                 {
                     new Claim("firstname",model.firstname),
                     new Claim("lastname", model.lastname),
-                    new Claim("middlename", model.middlename),
                     new Claim(JwtRegisteredClaimNames.Sub, "Sub"),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
@@ -103,9 +101,51 @@ namespace WEBAPI.Class
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                result2 =  ex.Message;
             }
             return result2;
+        }
+
+        public async Task<ServiceResponse<object>> RefreshToken(TokenModel token)
+        {
+            var service = new ServiceResponse<object>();
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                tokenHandler.ValidateToken(token.token, new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = _config["AuthManager:Issuer"],
+                    ValidAudience = _config["AuthManager:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AuthManager:Key"]))
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var fname = jwtToken.Claims.First(x => x.Type == "firstname").Value;
+                var lname = jwtToken.Claims.First(x => x.Type == "lastname").Value;
+                if(fname == token.firstname && lname == token.lastname)
+                {
+                    var model = new UserModel();
+                    model.firstname = token.firstname;
+                    model.lastname = token.lastname;
+
+                    service.Data = JToken(model);
+                    service.ResponseCode = 200;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                service.Data = null;
+                service.ResponseCode = 500;
+                service.Message = ex.Message;
+            }
+            return service;
         }
     }
 }

@@ -37,9 +37,9 @@ namespace WEBAPI.Helper
         public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
+            context.Items["token_expiry"] = false;
             if (token != null)
-                userContext(context, token);
+                userContext(context, token); 
                 
             await _request(context);
         }
@@ -47,7 +47,7 @@ namespace WEBAPI.Helper
         public void userContext(HttpContext context, string token)
         {
             try
-            {
+             {
                 IJwtValidator _validator = new JwtValidator(_serializer, _provider);
                 IJwtDecoder decoder = new JwtDecoder(_serializer, _validator, _urlEncoder, _algorithm);
                 var token1 = decoder.DecodeToObject<JWTToken>(token);
@@ -72,7 +72,7 @@ namespace WEBAPI.Helper
                     }, out SecurityToken validateToken);
                     var jwtToken = (JwtSecurityToken)validateToken;
                     AutorizeModel user = new AutorizeModel();
-                    user.middlename = jwtToken.Claims.First(x => x.Type == "middlename").Value;
+                    //user.middlename = jwtToken.Claims.First(x => x.Type == "middleName").Value;
                     user.firstname = jwtToken.Claims.First(x => x.Type == "firstname").Value;
                     user.lastname = jwtToken.Claims.First(x => x.Type == "lastname").Value;
 
@@ -81,7 +81,7 @@ namespace WEBAPI.Helper
                 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return;
             }

@@ -9,5 +9,6 @@ namespace WEBAPI.IRepository
     public interface IAuthenticate
     {
         Task<ServiceResponse<object>> getUser(string username, string password);
+        Task<ServiceResponse<object>> RefreshToken(TokenModel token);
     }
 }
