@@ -1,2 +1,2 @@
-# WEB-API-DotNet-Core
+# WEB-API
 WEB API .NET CORE 5.0
